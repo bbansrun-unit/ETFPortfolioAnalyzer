@@ -1,2 +1,19 @@
 server:
   port: 80
+spring:
+  devtools:
+    livereload:
+      enabled: true
+service:
+  api:
+    max_work_dt:
+      method: GET
+      endpoint: http://data.krx.co.kr/comm/bldAttendant/executeForResourceBundle.cmd?baseName=krx.mdc.i18n.component&key=B128.bld
+    stock_query:
+        method: POST
+        endpoint: http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+  params:
+    list:
+      bld: dbms/MDC/STAT/standard/MDCSTAT04301
+    detail:
+      bld: dbms/MDC/STAT/standard/MDCSTAT05001
