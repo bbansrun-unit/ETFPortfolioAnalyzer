@@ -1,7 +1,7 @@
 package me.g1tommy.etfportfolioanalyzer.service;
 
 import me.g1tommy.etfportfolioanalyzer.entity.StockEntity;
-import me.g1tommy.etfportfolioanalyzer.entity.ETFEntity;
+import me.g1tommy.etfportfolioanalyzer.entity.ETFListEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class KRXServiceImpl implements DataService {
     private KRXScrapeService scrapeService;
 
     @Override
-    public List<ETFEntity> getList() throws IOException {
+    public List<ETFListEntity> getList() throws IOException {
         return scrapeService.getList();
     }
 

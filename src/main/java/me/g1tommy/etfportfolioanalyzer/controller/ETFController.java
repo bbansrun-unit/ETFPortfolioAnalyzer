@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import me.g1tommy.etfportfolioanalyzer.entity.StockEntity;
-import me.g1tommy.etfportfolioanalyzer.entity.ETFEntity;
+import me.g1tommy.etfportfolioanalyzer.entity.ETFListEntity;
 import me.g1tommy.etfportfolioanalyzer.service.KRXServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class ETFController {
     })
     @ResponseBody
     @GetMapping("/etfs")
-    public ResponseEntity<List<ETFEntity>> list() throws IOException {
+    public ResponseEntity<List<ETFListEntity>> list() throws IOException {
         return ResponseEntity.ok(krxService.getList());
     }
 
