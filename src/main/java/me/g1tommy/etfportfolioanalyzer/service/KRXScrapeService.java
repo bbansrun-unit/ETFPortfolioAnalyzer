@@ -1,21 +1,21 @@
 package me.g1tommy.etfportfolioanalyzer.service;
 
+import static me.g1tommy.etfportfolioanalyzer.helper.HttpHelper.commonHeader;
+import static me.g1tommy.etfportfolioanalyzer.helper.HttpHelper.restTemplate;
+
 import me.g1tommy.etfportfolioanalyzer.entity.APIResponseEntity;
 import me.g1tommy.etfportfolioanalyzer.entity.ETFSearchEntity;
 import me.g1tommy.etfportfolioanalyzer.entity.StockEntity;
 import me.g1tommy.etfportfolioanalyzer.entity.ETFListEntity;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,7 +45,6 @@ public class KRXScrapeService {
     @Value("${service.params.information.solrIsuType}")
     private String solrIsuType;
 
-
     private String getMaxWorkDt() {
         ResponseEntity<String> response = new RestTemplate().exchange(
                 maxWorkDtEndpoint,
@@ -61,14 +60,7 @@ public class KRXScrapeService {
                 .getString("max_work_dt");
     }
 
-    private String getInformation(String etfCode) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-
+    private String getInformation(String etfCode) {
         // Payload
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
         paramMap.add("solrIsuType", solrIsuType);
@@ -76,16 +68,9 @@ public class KRXScrapeService {
         paramMap.add("rows", rows);
         paramMap.add("start", start);
 
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, commonHeader());
 
-        // Request
-        restTemplate.getInterceptors().add((request, body, execution) -> {
-            ClientHttpResponse response = execution.execute(request, body);
-            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            return response;
-        });
-
-        ResponseEntity<ETFSearchEntity> response = restTemplate.exchange(
+        ResponseEntity<ETFSearchEntity> response = restTemplate().exchange(
                 informationEndpoint,
                 HttpMethod.POST,
                 entity,
@@ -97,29 +82,15 @@ public class KRXScrapeService {
                 .getIsu_cd().get(0);
     }
 
-    public List<ETFListEntity> getList() throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-
+    public List<ETFListEntity> getList() {
         // Payload
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
         paramMap.add("bld", listBld);
         paramMap.add("trdDd", getMaxWorkDt());
 
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, commonHeader());
 
-        // Request
-        restTemplate.getInterceptors().add((request, body, execution) -> {
-            ClientHttpResponse response = execution.execute(request,body);
-            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            return response;
-        });
-
-        ResponseEntity<APIResponseEntity<List<ETFListEntity>>> response = restTemplate.exchange(
+        ResponseEntity<APIResponseEntity<List<ETFListEntity>>> response = restTemplate().exchange(
                 stockQueryEndpoint,
                 HttpMethod.POST,
                 entity,
@@ -129,30 +100,16 @@ public class KRXScrapeService {
         return response.getBody().getOutput();
     }
 
-    public List<StockEntity> getStockDetail(String code) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-
+    public List<StockEntity> getStockDetail(String code) {
         // Payload
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
         paramMap.add("bld", detailBld);
         paramMap.add("trdDd", getMaxWorkDt());
         paramMap.add("isuCd", getInformation(code));
 
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, commonHeader());
 
-        // Request
-        restTemplate.getInterceptors().add((request, body, execution) -> {
-            ClientHttpResponse response = execution.execute(request,body);
-            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            return response;
-        });
-
-        ResponseEntity<APIResponseEntity<List<StockEntity>>> response = restTemplate.exchange(
+        ResponseEntity<APIResponseEntity<List<StockEntity>>> response = restTemplate().exchange(
                 stockQueryEndpoint,
                 HttpMethod.POST,
                 entity,
